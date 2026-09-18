@@ -23,9 +23,6 @@ test = [
 testpaths = ["tests"]
 pythonpath = ["."]
 
-[tool.vercel]
-entrypoint = "app.main:app"
-
 [tool.vercel.scripts]
 build = "python scripts/vercel_build.py"
 
