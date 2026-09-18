@@ -1,0 +1,13 @@
+<section class="skeleton-list" aria-busy="true" aria-live="polite" aria-label="Loading trials" i18n-aria-label="@@trialsList.loadingAriaLabel">
+  @for (item of skeletonRows; track item) {
+    <article class="trial-row skeleton-card">
+      <div class="skeleton-line skeleton-line--title"></div>
+      <div class="skeleton-line skeleton-line--wide"></div>
+      <div class="chips">
+        <span class="skeleton-chip"></span>
+        <span class="skeleton-chip"></span>
+        <span class="skeleton-chip skeleton-chip--wide"></span>
+      </div>
+    </article>
+  }
+</section>

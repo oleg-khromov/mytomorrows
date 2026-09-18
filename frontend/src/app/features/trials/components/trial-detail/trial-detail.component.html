@@ -1,0 +1,47 @@
+@let currentTrial = trial();
+
+<article class="details">
+  <section class="panel details-section">
+    <h2 i18n="@@trialDetail.overview">Overview</h2>
+    <p>{{ currentTrial.summary }}</p>
+    <div class="chips">
+      <span class="chip">{{ currentTrial.phase }}</span>
+      <span class="chip">{{ currentTrial.status }}</span>
+      <span class="chip">{{ currentTrial.condition }}</span>
+    </div>
+  </section>
+
+  <section class="panel details-section">
+    <h2 i18n="@@trialDetail.intervention">Intervention</h2>
+    <p>{{ currentTrial.intervention }}</p>
+  </section>
+
+  <section class="panel details-section">
+    <h2 i18n="@@trialDetail.eligibility">Eligibility</h2>
+    <ul class="detail-list">
+      @for (criterion of currentTrial.eligibility; track criterion) {
+        <li>{{ criterion }}</li>
+      }
+    </ul>
+  </section>
+
+  <section class="panel details-section">
+    <h2 i18n="@@trialDetail.locations">Locations</h2>
+    <ul class="detail-list">
+      @for (location of currentTrial.locations; track location.country + location.city + location.facility) {
+        <li>{{ location.facility }}, {{ location.city }}, {{ location.country }}</li>
+      }
+    </ul>
+  </section>
+
+  <section class="panel details-section">
+    <h2 i18n="@@trialDetail.contact">Contact</h2>
+    <p>
+      <ng-container i18n="@@trialDetail.sponsor">Sponsor: {{ currentTrial.sponsor }}</ng-container><br>
+      <ng-container i18n="@@trialDetail.email">Email:</ng-container>
+      <a [href]="'mailto:' + currentTrial.contactEmail">{{ currentTrial.contactEmail }}</a><br>
+      <ng-container i18n="@@trialDetail.source">Source:</ng-container>
+      <a [href]="currentTrial.sourceUrl" target="_blank" rel="noreferrer">{{ currentTrial.sourceUrl }}</a>
+    </p>
+  </section>
+</article>

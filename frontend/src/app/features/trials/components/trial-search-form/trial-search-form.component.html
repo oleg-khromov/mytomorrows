@@ -1,0 +1,69 @@
+<form class="panel search-form" (submit)="submit($event)">
+  <label class="input-group">
+    <span class="input-label" i18n="@@trialSearchForm.label">Search by condition</span>
+    <span class="search-input-wrap">
+      <input
+        class="search-input search-input--with-action"
+        type="text"
+        role="searchbox"
+        name="query"
+        [value]="query()"
+        [attr.minlength]="minLength"
+        [attr.maxlength]="maxLength + 1"
+        [attr.aria-expanded]="showSuggestions()"
+        aria-controls="trial-search-suggestions"
+        i18n-placeholder="@@trialSearchForm.placeholder"
+        placeholder="Try solid tumor, melanoma, breast cancer..."
+        autocomplete="off"
+        (input)="updateQuery($event)"
+        (focus)="suggestionsOpen.set(true)"
+      />
+
+      @if (suggestionsLoading()) {
+        <span class="input-loading-indicator" aria-label="Loading suggestions" i18n-aria-label="@@trialSearchForm.suggestionsLoading"></span>
+      } @else if (query().length > 0) {
+        <button
+          class="icon-button search-clear-button"
+          type="button"
+          aria-label="Clear search and load all trials"
+          i18n-aria-label="@@trialSearchForm.clearSearch"
+          [disabled]="loading()"
+          (click)="clear()"
+        >
+          ×
+        </button>
+      }
+
+      @if (showSuggestions()) {
+        <ul id="trial-search-suggestions" class="suggestions-list" role="listbox">
+          @if (suggestionsLoading()) {
+            <li class="suggestions-list__item muted" i18n="@@trialSearchForm.loadingSuggestions">Loading suggestions...</li>
+          } @else {
+            @for (suggestion of suggestions(); track suggestion.matchType + suggestion.value) {
+              <li>
+                <button class="suggestion-option" type="button" role="option" (click)="selectSuggestion(suggestion)">
+                  <span>{{ suggestion.label }}</span>
+                  <span class="suggestion-option__type">{{ suggestion.matchType }}</span>
+                </button>
+              </li>
+            }
+          }
+        </ul>
+      }
+    </span>
+  </label>
+
+  <button class="primary-button" type="submit" [disabled]="!canSubmit()">
+    @if (loading()) {
+      <span i18n="@@trialSearchForm.searching">Searching</span>
+    } @else {
+      <span i18n="@@trialSearchForm.search">Search</span>
+    }
+  </button>
+
+  @if (tooShort()) {
+    <p class="error-message" i18n="@@trialSearchForm.tooShort">Enter at least 3 characters.</p>
+  } @else if (tooLong()) {
+    <p class="error-message" i18n="@@trialSearchForm.tooLong">Search query is too long.</p>
+  }
+</form>

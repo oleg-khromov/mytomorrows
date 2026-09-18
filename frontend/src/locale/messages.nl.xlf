@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en-US" trgLang="nl-NL">
+  <file id="ngi18n" original="ng.template">
+    <unit id="app.brand">
+      <segment>
+        <source>myTomorrows Trials</source>
+        <target>myTomorrows Trials</target>
+      </segment>
+    </unit>
+    <unit id="app.searchLink">
+      <segment>
+        <source>Search</source>
+        <target>Zoeken</target>
+      </segment>
+    </unit>
+    <unit id="trialsSearch.title">
+      <segment>
+        <source>Clinical trials by condition</source>
+        <target>Klinische studies per aandoening</target>
+      </segment>
+    </unit>
+    <unit id="trialsSearch.showingCount">
+      <segment>
+        <source>Showing <ph id="INTERPOLATION"/> of <ph id="INTERPOLATION_1"/></source>
+        <target>Toont <ph id="INTERPOLATION"/> van <ph id="INTERPOLATION_1"/></target>
+      </segment>
+    </unit>
+    <unit id="trialsSearch.summaryInitial">
+      <segment>
+        <source>Enter a condition to start.</source>
+        <target>Voer een aandoening in om te beginnen.</target>
+      </segment>
+    </unit>
+    <unit id="trialsSearch.summaryEmpty">
+      <segment>
+        <source>No trials found.</source>
+        <target>Geen studies gevonden.</target>
+      </segment>
+    </unit>
+    <unit id="trialsSearch.summaryFoundOne">
+      <segment>
+        <source>1 trial found</source>
+        <target>1 studie gevonden</target>
+      </segment>
+    </unit>
+    <unit id="trialsSearch.summaryFoundMany">
+      <segment>
+        <source><ph id="INTERPOLATION"/> trials found</source>
+        <target><ph id="INTERPOLATION"/> studies gevonden</target>
+      </segment>
+    </unit>
+    <unit id="trialSearchForm.label">
+      <segment>
+        <source>Search by condition</source>
+        <target>Zoeken op aandoening</target>
+      </segment>
+    </unit>
+    <unit id="trialSearchForm.placeholder">
+      <segment>
+        <source>Try solid tumor, melanoma, breast cancer...</source>
+        <target>Probeer solide tumor, melanoom, borstkanker...</target>
+      </segment>
+    </unit>
+    <unit id="trialSearchForm.searching">
+      <segment>
+        <source>Searching</source>
+        <target>Zoeken</target>
+      </segment>
+    </unit>
+    <unit id="trialSearchForm.search">
+      <segment>
+        <source>Search</source>
+        <target>Zoeken</target>
+      </segment>
+    </unit>
+    <unit id="trialSearchForm.clearSearch">
+      <segment>
+        <source>Clear search and load all trials</source>
+        <target>Zoekopdracht wissen en alle studies laden</target>
+      </segment>
+    </unit>
+    <unit id="trialSearchForm.suggestionsLoading">
+      <segment>
+        <source>Loading suggestions</source>
+        <target>Suggesties laden</target>
+      </segment>
+    </unit>
+    <unit id="trialSearchForm.loadingSuggestions">
+      <segment>
+        <source>Loading suggestions...</source>
+        <target>Suggesties laden...</target>
+      </segment>
+    </unit>
+    <unit id="trialSearchForm.tooShort">
+      <segment>
+        <source>Enter at least 3 characters.</source>
+        <target>Voer minimaal 3 tekens in.</target>
+      </segment>
+    </unit>
+    <unit id="trialSearchForm.tooLong">
+      <segment>
+        <source>Search query is too long.</source>
+        <target>De zoekopdracht is te lang.</target>
+      </segment>
+    </unit>
+    <unit id="trialsList.loadingAriaLabel">
+      <segment>
+        <source>Loading trials</source>
+        <target>Studies laden</target>
+      </segment>
+    </unit>
+    <unit id="trialsList.empty">
+      <segment>
+        <source>No matching trials were found.</source>
+        <target>Er zijn geen overeenkomende studies gevonden.</target>
+      </segment>
+    </unit>
+    <unit id="trialsList.meta">
+      <segment>
+        <source><ph id="INTERPOLATION"/> · <ph id="INTERPOLATION_1"/> · Updated <ph id="INTERPOLATION_2"/></source>
+        <target><ph id="INTERPOLATION"/> · <ph id="INTERPOLATION_1"/> · Bijgewerkt op <ph id="INTERPOLATION_2"/></target>
+      </segment>
+    </unit>
+    <unit id="trialsList.summaryAriaLabel">
+      <segment>
+        <source>Trial summary</source>
+        <target>Studiesamenvatting</target>
+      </segment>
+    </unit>
+    <unit id="trialsList.countryCount">
+      <segment>
+        <source>{VAR_PLURAL, plural, =1 {1 country} other {<ph id="INTERPOLATION"/> countries}}</source>
+        <target>{VAR_PLURAL, plural, =1 {1 land} other {<ph id="INTERPOLATION"/> landen}}</target>
+      </segment>
+    </unit>
+    <unit id="trialDetails.backToSearch">
+      <segment>
+        <source>Back to search</source>
+        <target>Terug naar zoeken</target>
+      </segment>
+    </unit>
+    <unit id="trialDetails.loadingAriaLabel">
+      <segment>
+        <source>Loading trial details</source>
+        <target>Studiedetails laden</target>
+      </segment>
+    </unit>
+    <unit id="trialDetail.overview">
+      <segment>
+        <source>Overview</source>
+        <target>Overzicht</target>
+      </segment>
+    </unit>
+    <unit id="trialDetail.intervention">
+      <segment>
+        <source>Intervention</source>
+        <target>Interventie</target>
+      </segment>
+    </unit>
+    <unit id="trialDetail.eligibility">
+      <segment>
+        <source>Eligibility</source>
+        <target>Geschiktheid</target>
+      </segment>
+    </unit>
+    <unit id="trialDetail.locations">
+      <segment>
+        <source>Locations</source>
+        <target>Locaties</target>
+      </segment>
+    </unit>
+    <unit id="trialDetail.contact">
+      <segment>
+        <source>Contact</source>
+        <target>Contact</target>
+      </segment>
+    </unit>
+    <unit id="trialDetail.sponsor">
+      <segment>
+        <source>Sponsor: <ph id="INTERPOLATION"/></source>
+        <target>Sponsor: <ph id="INTERPOLATION"/></target>
+      </segment>
+    </unit>
+    <unit id="trialDetail.email">
+      <segment>
+        <source>Email:</source>
+        <target>E-mail:</target>
+      </segment>
+    </unit>
+    <unit id="trialDetail.source">
+      <segment>
+        <source>Source:</source>
+        <target>Bron:</target>
+      </segment>
+    </unit>
+  </file>
+</xliff>

@@ -1,0 +1,37 @@
+@if (error(); as errorMessage) {
+  <section class="state-message error-message" aria-live="polite">
+    {{ errorMessage }}
+  </section>
+} @else if (loading()) {
+  <app-trials-list-skeleton />
+} @else if (trials().length === 0) {
+  <section class="state-message" i18n="@@trialsList.empty">
+    No matching trials were found.
+  </section>
+} @else {
+  <ul class="results-list">
+    @for (trial of trials(); track trial.id) {
+      <li>
+        <a
+          class="trial-row"
+          [routerLink]="['/trials', trial.id]"
+          [state]="{ returnQueryParams: { q: query() || null, page: page(), page_size: pageSize() }, scrollY: scrollY() }"
+          (pointerdown)="captureScrollPosition()"
+          (keydown.enter)="captureScrollPosition()"
+        >
+          <h2 class="trial-row__title">{{ trial.title }}</h2>
+          <p class="trial-row__meta" i18n="@@trialsList.meta">
+            {{ trial.condition }} · {{ trial.sponsor }} · Updated {{ trial.lastUpdated }}
+          </p>
+          <div class="chips" aria-label="Trial summary" i18n-aria-label="@@trialsList.summaryAriaLabel">
+            <span class="chip">{{ trial.phase }}</span>
+            <span class="chip">{{ trial.status }}</span>
+            <span class="chip" i18n="@@trialsList.countryCount">
+              {trial.countryCount, plural, =1 {1 country} other {{{ trial.countryCount }} countries}}
+            </span>
+          </div>
+        </a>
+      </li>
+    }
+  </ul>
+}

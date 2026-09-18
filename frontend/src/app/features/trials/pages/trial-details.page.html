@@ -1,0 +1,18 @@
+<main class="page">
+  <header class="page-header">
+    <a class="secondary-button" routerLink="/" [queryParams]="backQueryParams()" [state]="backNavigationState()" i18n="@@trialDetails.backToSearch">
+      Back to search
+    </a>
+    <h1 class="page-title">{{ title() }}</h1>
+  </header>
+
+  @if (loading()) {
+    <app-trial-details-skeleton />
+  } @else if (error(); as errorMessage) {
+    <section class="state-message error-message" aria-live="polite">
+      {{ errorMessage }}
+    </section>
+  } @else if (trial(); as currentTrial) {
+    <app-trial-detail [trial]="currentTrial" />
+  }
+</main>

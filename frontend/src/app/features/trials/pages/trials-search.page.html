@@ -1,0 +1,50 @@
+<main class="page">
+  <header class="page-header">
+    <h1 class="page-title" i18n="@@trialsSearch.title">Clinical trials by condition</h1>
+  </header>
+
+  <div class="content-grid">
+    <section class="sticky-search-bar">
+      <app-trial-search-form
+        [initialQuery]="store.query()"
+        [loading]="store.loading()"
+        (submitted)="search($event)"
+      />
+
+      <section class="results-header" aria-live="polite">
+        @if (store.meta(); as meta) {
+          @if (meta.totalItems === 0) {
+            <strong i18n="@@trialsSearch.summaryEmpty">No trials found.</strong>
+          } @else if (meta.totalItems === 1) {
+            <strong i18n="@@trialsSearch.summaryFoundOne">1 trial found</strong>
+          } @else {
+            <strong i18n="@@trialsSearch.summaryFoundMany">{{ meta.totalItems }} trials found</strong>
+          }
+
+          <span class="muted" i18n="@@trialsSearch.showingCount">
+            Showing {{ store.loadedCount() }} of {{ store.totalItems() }}
+          </span>
+        } @else {
+          <strong i18n="@@trialsSearch.summaryInitial">
+            Enter a condition to start.
+          </strong>
+        }
+      </section>
+    </section>
+
+    <app-trials-list
+      [trials]="store.items()"
+      [loading]="store.loading()"
+      [error]="store.error()"
+      [query]="store.query()"
+      [page]="store.page()"
+      [pageSize]="store.pageSize()"
+    />
+
+    @if (store.loadingMore()) {
+      <app-trials-list-skeleton />
+    }
+
+    <app-infinite-scroll-sentinel [disabled]="!store.canLoadMore()" (reached)="loadMore()" />
+  </div>
+</main>
