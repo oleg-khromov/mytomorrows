@@ -53,6 +53,13 @@ The API runs on `http://localhost:8000`.
 
 Use `backend` as the Vercel project root directory.
 
+Vercel commands:
+
+```bash
+Install Command: pip install -r requirements.txt
+Build Command: python scripts/vercel_build.py
+```
+
 Required production environment variables:
 
 ```bash
