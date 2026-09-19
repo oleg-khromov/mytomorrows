@@ -8,19 +8,17 @@ import { TrialSearchFormComponent } from '../components/trial-search-form/trial-
 import { TrialsListComponent } from '../components/trials-list/trials-list.component';
 import { TrialsListSkeletonComponent } from '../components/trials-list-skeleton/trials-list-skeleton.component';
 import { InfiniteScrollSentinelComponent } from '../components/infinite-scroll-sentinel/infinite-scroll-sentinel.component';
-import { DEFAULT_PAGE_SIZE, PageNumber, PageSize, SearchQuery, toPageSize } from '../models/trial.models';
+import { DEFAULT_RESULT_LIMIT, ResultLimit, SearchQuery, toResultLimit } from '../models/trial.models';
 
 interface TrialsSearchRouteQuery {
   query: SearchQuery;
-  page: PageNumber;
-  pageSize: PageSize;
+  limit: ResultLimit;
 }
 
 @Component({
   selector: 'app-trials-search-page',
   standalone: true,
   imports: [TrialSearchFormComponent, TrialsListComponent, TrialsListSkeletonComponent, InfiniteScrollSentinelComponent],
-  providers: [TrialsSearchStore],
   templateUrl: './trials-search.page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -38,18 +36,14 @@ export class TrialsSearchPage {
       .pipe(
         map((params) => ({
           query: params.get('q') ?? '',
-          page: toPositiveInteger(params.get('page'), 1),
-          pageSize: toPageSizeParam(params.get('page_size'), DEFAULT_PAGE_SIZE),
+          limit: toLimitParam(params.get('limit'), DEFAULT_RESULT_LIMIT),
         } satisfies TrialsSearchRouteQuery)),
         distinctUntilChanged(
-          (previous, current) =>
-            previous.query === current.query &&
-            previous.page === current.page &&
-            previous.pageSize === current.pageSize,
+          (previous, current) => previous.query === current.query && previous.limit === current.limit,
         ),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((request) => this.store.load(request));
+      .subscribe((request) => this.store.load({ ...request, offset: 0 }));
 
     effect(() => {
       if (this.hasRestoredScroll || this.restoreScrollY <= 0 || this.store.loading() || this.store.items().length === 0) {
@@ -68,8 +62,7 @@ export class TrialsSearchPage {
       relativeTo: this.route,
       queryParams: {
         q: query || null,
-        page: 1,
-        page_size: this.store.pageSize(),
+        limit: this.store.limit(),
       },
     });
   }
@@ -95,7 +88,7 @@ function toPositiveInteger(value: string | null, fallback: number): number {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
-function toPageSizeParam(value: string | null, fallback: PageSize): PageSize {
+function toLimitParam(value: string | null, fallback: ResultLimit): ResultLimit {
   const parsed = toPositiveInteger(value, fallback);
-  return toPageSize(parsed, fallback);
+  return toResultLimit(parsed, fallback);
 }

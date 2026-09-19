@@ -24,8 +24,8 @@ export class TrialsApiService {
 
   searchTrials(params: SearchTrialsParams): Observable<TrialsSearchResponse> {
     let httpParams = new HttpParams()
-      .set('page', params.page)
-      .set('page_size', params.pageSize);
+      .set('offset', params.offset)
+      .set('limit', params.limit);
 
     if (params.query) {
       httpParams = httpParams.set('q', params.query);

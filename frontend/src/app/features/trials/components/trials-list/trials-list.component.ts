@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { DEFAULT_PAGE_SIZE, PageNumber, PageSize, SearchQuery, TrialListItem } from '../../models/trial.models';
+import { DEFAULT_RESULT_LIMIT, ResultLimit, SearchQuery, TrialListItem } from '../../models/trial.models';
 import { TrialsListSkeletonComponent } from '../trials-list-skeleton/trials-list-skeleton.component';
 
 @Component({
@@ -16,8 +16,7 @@ export class TrialsListComponent {
   readonly loading = input(false);
   readonly error = input<string | null>(null);
   readonly query = input<SearchQuery>('');
-  readonly page = input<PageNumber>(1);
-  readonly pageSize = input<PageSize>(DEFAULT_PAGE_SIZE);
+  readonly limit = input<ResultLimit>(DEFAULT_RESULT_LIMIT);
   readonly scrollY = signal(0);
 
   captureScrollPosition(): void {

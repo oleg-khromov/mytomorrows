@@ -20,7 +20,7 @@ def search_trials(
     params: Annotated[TrialsSearchQueryParams, Query()],
     service: TrialService = Depends(get_trial_service),
 ) -> TrialsSearchResponse:
-    return service.search_trials(query=params.q, page=params.page, page_size=params.page_size)
+    return service.search_trials(query=params.q, offset=params.offset, limit=params.limit)
 
 
 @router.get("/suggestions", response_model=TrialsSuggestionsResponse)

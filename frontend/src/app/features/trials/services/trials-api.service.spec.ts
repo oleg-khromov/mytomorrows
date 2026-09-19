@@ -26,17 +26,17 @@ describe(TrialsApiService.name, () => {
   });
 
   it('maps paginated search DTOs to UI models', () => {
-    service.searchTrials({ query: 'solid tumor', page: 1, pageSize: 5 }).subscribe((response) => {
+    service.searchTrials({ query: 'solid tumor', offset: 0, limit: 10 }).subscribe((response) => {
       expect(response.items[0].countryCount).toBe(2);
       expect(response.items[0].lastUpdated).toBe('2026-08-12');
-      expect(response.meta.pageSize).toBe(5);
+      expect(response.meta.limit).toBe(10);
     });
 
     const request = http.expectOne((item) => item.url === '/api/v1/trials');
 
     expect(request.request.params.get('q')).toBe('solid tumor');
-    expect(request.request.params.get('page')).toBe('1');
-    expect(request.request.params.get('page_size')).toBe('5');
+    expect(request.request.params.get('offset')).toBe('0');
+    expect(request.request.params.get('limit')).toBe('10');
 
     request.flush({
       query: 'solid tumor',
@@ -53,18 +53,17 @@ describe(TrialsApiService.name, () => {
         },
       ],
       meta: {
-        page: 1,
-        page_size: 5,
+        offset: 0,
+        limit: 10,
         total_items: 1,
-        total_pages: 1,
         has_next: false,
-        has_previous: false,
+        next_offset: null,
       },
     });
   });
 
   it('omits q when the query is empty so browsing all trials remains possible', () => {
-    service.searchTrials({ query: '', page: 1, pageSize: 5 }).subscribe((response) => {
+    service.searchTrials({ query: '', offset: 0, limit: 10 }).subscribe((response) => {
       expect(response.items).toEqual([]);
       expect(response.meta.totalItems).toBe(0);
     });
@@ -72,19 +71,18 @@ describe(TrialsApiService.name, () => {
     const request = http.expectOne((item) => item.url === '/api/v1/trials');
 
     expect(request.request.params.has('q')).toBeFalse();
-    expect(request.request.params.get('page')).toBe('1');
-    expect(request.request.params.get('page_size')).toBe('5');
+    expect(request.request.params.get('offset')).toBe('0');
+    expect(request.request.params.get('limit')).toBe('10');
 
     request.flush({
       query: '',
       items: [],
       meta: {
-        page: 1,
-        page_size: 5,
+        offset: 0,
+        limit: 10,
         total_items: 0,
-        total_pages: 0,
         has_next: false,
-        has_previous: false,
+        next_offset: null,
       },
     });
   });

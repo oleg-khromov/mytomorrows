@@ -6,7 +6,7 @@ import { catchError, distinctUntilChanged, finalize, map, of, switchMap, tap } f
 import { getErrorMessage } from '@core/http/api-error';
 import { withMinimumDuration } from '@core/rxjs/minimum-duration';
 import { TrialsApiService } from '../services/trials-api.service';
-import { isPageSize, PageNumber, PageSize, SearchQuery, TrialDetail } from '../models/trial.models';
+import { isResultLimit, ResultLimit, SearchQuery, TrialDetail } from '../models/trial.models';
 import { TrialDetailComponent } from '../components/trial-detail/trial-detail.component';
 import { TrialDetailsSkeletonComponent } from '../components/trial-details-skeleton/trial-details-skeleton.component';
 
@@ -14,8 +14,7 @@ const MINIMUM_LOADING_STATE_MS = 500;
 
 interface SearchReturnQueryParams {
   q: SearchQuery | null;
-  page: PageNumber;
-  page_size: PageSize;
+  limit: ResultLimit;
 }
 
 interface TrialDetailsNavigationState {
@@ -79,8 +78,7 @@ function readReturnQueryParams(): Params {
 
   return {
     q: returnQueryParams.q || null,
-    page: returnQueryParams.page,
-    page_size: returnQueryParams.page_size,
+    limit: returnQueryParams.limit,
   };
 }
 
@@ -97,21 +95,15 @@ function isSearchReturnQueryParams(value: unknown): value is SearchReturnQueryPa
   }
 
   const q = value['q'];
-  const page = value['page'];
-  const pageSize = value['page_size'];
+  const limit = value['limit'];
 
   return (
     (q === null || typeof q === 'string') &&
-    isPositiveInteger(page) &&
-    typeof pageSize === 'number' &&
-    isPageSize(pageSize)
+    typeof limit === 'number' &&
+    isResultLimit(limit)
   );
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
-}
-
-function isPositiveInteger(value: unknown): value is PageNumber {
-  return typeof value === 'number' && Number.isInteger(value) && value > 0;
 }

@@ -18,9 +18,9 @@ describe(TrialsSearchStore.name, () => {
     });
 
     const store = TestBed.inject(TrialsSearchStore);
-    store.load({ query: ' solid tumor ', page: 1, pageSize: 5 });
+    store.load({ query: ' solid tumor ', offset: 0, limit: 10 });
 
-    expect(api.searchTrials).toHaveBeenCalledWith({ query: 'solid tumor', page: 1, pageSize: 5 });
+    expect(api.searchTrials).toHaveBeenCalledWith({ query: 'solid tumor', offset: 0, limit: 10 });
     expect(store.loading()).toBeTrue();
 
     tick(500);
@@ -43,7 +43,7 @@ describe(TrialsSearchStore.name, () => {
     });
 
     const store = TestBed.inject(TrialsSearchStore);
-    store.load({ query: 'solid tumor', page: 1, pageSize: 5 });
+    store.load({ query: 'solid tumor', offset: 0, limit: 10 });
 
     tick(500);
 
@@ -67,8 +67,8 @@ describe(TrialsSearchStore.name, () => {
     });
 
     const store = TestBed.inject(TrialsSearchStore);
-    store.load({ query: 'cancer', page: 1, pageSize: 5 });
-    store.load({ query: 'tumor', page: 1, pageSize: 5 });
+    store.load({ query: 'cancer', offset: 0, limit: 10 });
+    store.load({ query: 'tumor', offset: 0, limit: 10 });
 
     firstSearch$.next(buildSearchResponse('cancer', 'Old result'));
     firstSearch$.complete();
@@ -81,11 +81,11 @@ describe(TrialsSearchStore.name, () => {
     expect(store.items()[0]?.title).toBe('Latest result');
   }));
 
-  it('appends the next page for infinite scroll', fakeAsync(() => {
+  it('appends the next offset for infinite scroll', fakeAsync(() => {
     const secondPage$ = new Subject<TrialsSearchResponse>();
     const api = jasmine.createSpyObj<TrialsApiService>('TrialsApiService', ['searchTrials']);
     api.searchTrials.and.returnValues(
-      of(buildSearchResponse('cancer', 'First page result', { page: 1, totalItems: 2, totalPages: 2, hasNext: true })),
+      of(buildSearchResponse('cancer', 'First page result', { totalItems: 2, hasNext: true, nextOffset: 1 })),
       secondPage$.asObservable(),
     );
 
@@ -97,7 +97,7 @@ describe(TrialsSearchStore.name, () => {
     });
 
     const store = TestBed.inject(TrialsSearchStore);
-    store.load({ query: 'cancer', page: 1, pageSize: 5 });
+    store.load({ query: 'cancer', offset: 0, limit: 10 });
 
     tick(500);
 
@@ -105,14 +105,36 @@ describe(TrialsSearchStore.name, () => {
 
     expect(store.loadingMore()).toBeTrue();
 
-    secondPage$.next(buildSearchResponse('cancer', 'Second page result', { page: 2, totalItems: 2, totalPages: 2, hasNext: false }));
+    secondPage$.next(buildSearchResponse('cancer', 'Second page result', { offset: 1, totalItems: 2, hasNext: false }));
     secondPage$.complete();
 
-    expect(api.searchTrials).toHaveBeenCalledWith({ query: 'cancer', page: 2, pageSize: 5 });
+    expect(api.searchTrials).toHaveBeenCalledWith({ query: 'cancer', offset: 1, limit: 10 });
     expect(store.items().map((item) => item.title)).toEqual(['First page result', 'Second page result']);
     expect(store.loadedCount()).toBe(2);
     expect(store.totalItems()).toBe(2);
     expect(store.loadingMore()).toBeFalse();
+  }));
+
+  it('keeps loaded state for return-from-detail navigation', fakeAsync(() => {
+    const api = jasmine.createSpyObj<TrialsApiService>('TrialsApiService', ['searchTrials']);
+    api.searchTrials.and.returnValue(of(buildSearchResponse('cancer', 'Cached result')));
+
+    TestBed.configureTestingModule({
+      providers: [
+        TrialsSearchStore,
+        { provide: TrialsApiService, useValue: api },
+      ],
+    });
+
+    const store = TestBed.inject(TrialsSearchStore);
+    store.load({ query: 'cancer', offset: 0, limit: 10 });
+
+    tick(500);
+
+    store.load({ query: 'cancer', offset: 0, limit: 10 });
+
+    expect(api.searchTrials).toHaveBeenCalledTimes(1);
+    expect(store.items()[0]?.title).toBe('Cached result');
   }));
 });
 
@@ -136,12 +158,11 @@ function buildSearchResponse(
       },
     ],
     meta: {
-      page: meta.page ?? 1,
-      pageSize: 5,
+      offset: meta.offset ?? 0,
+      limit: meta.limit ?? 10,
       totalItems: meta.totalItems ?? 1,
-      totalPages: meta.totalPages ?? 1,
       hasNext: meta.hasNext ?? false,
-      hasPrevious: false,
+      nextOffset: meta.nextOffset ?? null,
     },
   };
 }

@@ -1,10 +1,10 @@
 export type TrialId = string;
 export type SearchQuery = string;
-export type PageNumber = number;
-export type PageSize = 5 | 10 | 20;
+export type ResultOffset = number;
+export type ResultLimit = 10 | 20 | 50;
 
-export const DEFAULT_PAGE_SIZE: PageSize = 5;
-export const ALLOWED_PAGE_SIZES = [5, 10, 20] as const satisfies readonly PageSize[];
+export const DEFAULT_RESULT_LIMIT: ResultLimit = 10;
+export const ALLOWED_RESULT_LIMITS = [10, 20, 50] as const satisfies readonly ResultLimit[];
 export const MIN_SEARCH_QUERY_LENGTH = 3;
 export const MAX_SEARCH_QUERY_LENGTH = 120;
 
@@ -34,19 +34,18 @@ export interface TrialDetailDto extends TrialListItemDto {
   source_url: string;
 }
 
-export interface PageMetaDto {
-  page: number;
-  page_size: number;
+export interface SearchMetaDto {
+  offset: number;
+  limit: number;
   total_items: number;
-  total_pages: number;
   has_next: boolean;
-  has_previous: boolean;
+  next_offset: number | null;
 }
 
 export interface TrialsSearchResponseDto {
   query: string;
   items: readonly TrialListItemDto[];
-  meta: PageMetaDto;
+  meta: SearchMetaDto;
 }
 
 export interface TrialSuggestionDto {
@@ -86,19 +85,18 @@ export interface TrialDetail extends TrialListItem {
   sourceUrl: string;
 }
 
-export interface PageMeta {
-  page: PageNumber;
-  pageSize: PageSize;
+export interface SearchMeta {
+  offset: ResultOffset;
+  limit: ResultLimit;
   totalItems: number;
-  totalPages: number;
   hasNext: boolean;
-  hasPrevious: boolean;
+  nextOffset: ResultOffset | null;
 }
 
 export interface TrialsSearchResponse {
   query: string;
   items: readonly TrialListItem[];
-  meta: PageMeta;
+  meta: SearchMeta;
 }
 
 export interface TrialSuggestion {
@@ -114,14 +112,14 @@ export interface TrialsSuggestionsResponse {
 
 export interface SearchTrialsParams {
   query: SearchQuery;
-  page: PageNumber;
-  pageSize: PageSize;
+  offset: ResultOffset;
+  limit: ResultLimit;
 }
 
-export function toPageSize(value: number, fallback: PageSize = DEFAULT_PAGE_SIZE): PageSize {
-  return isPageSize(value) ? value : fallback;
+export function toResultLimit(value: number, fallback: ResultLimit = DEFAULT_RESULT_LIMIT): ResultLimit {
+  return isResultLimit(value) ? value : fallback;
 }
 
-export function isPageSize(value: number): value is PageSize {
-  return ALLOWED_PAGE_SIZES.includes(value as PageSize);
+export function isResultLimit(value: number): value is ResultLimit {
+  return ALLOWED_RESULT_LIMITS.includes(value as ResultLimit);
 }

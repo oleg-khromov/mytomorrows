@@ -15,7 +15,7 @@
         <a
           class="trial-row"
           [routerLink]="['/trials', trial.id]"
-          [state]="{ returnQueryParams: { q: query() || null, page: page(), page_size: pageSize() }, scrollY: scrollY() }"
+          [state]="{ returnQueryParams: { q: query() || null, limit: limit() }, scrollY: scrollY() }"
           (pointerdown)="captureScrollPosition()"
           (keydown.enter)="captureScrollPosition()"
         >

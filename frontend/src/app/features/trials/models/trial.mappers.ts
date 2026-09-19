@@ -1,7 +1,7 @@
 import {
-  DEFAULT_PAGE_SIZE,
-  PageMeta,
-  PageMetaDto,
+  DEFAULT_RESULT_LIMIT,
+  SearchMeta,
+  SearchMetaDto,
   TrialDetail,
   TrialDetailDto,
   TrialListItem,
@@ -12,7 +12,7 @@ import {
   TrialsSuggestionsResponseDto,
   TrialsSearchResponse,
   TrialsSearchResponseDto,
-  toPageSize,
+  toResultLimit,
 } from './trial.types';
 
 export function mapTrialListItem(dto: TrialListItemDto): TrialListItem {
@@ -28,14 +28,13 @@ export function mapTrialListItem(dto: TrialListItemDto): TrialListItem {
   };
 }
 
-export function mapPageMeta(dto: PageMetaDto): PageMeta {
+export function mapSearchMeta(dto: SearchMetaDto): SearchMeta {
   return {
-    page: dto.page,
-    pageSize: toPageSize(dto.page_size, DEFAULT_PAGE_SIZE),
+    offset: dto.offset,
+    limit: toResultLimit(dto.limit, DEFAULT_RESULT_LIMIT),
     totalItems: dto.total_items,
-    totalPages: dto.total_pages,
     hasNext: dto.has_next,
-    hasPrevious: dto.has_previous,
+    nextOffset: dto.next_offset,
   };
 }
 
@@ -43,7 +42,7 @@ export function mapSearchResponse(dto: TrialsSearchResponseDto): TrialsSearchRes
   return {
     query: dto.query,
     items: dto.items.map(mapTrialListItem),
-    meta: mapPageMeta(dto.meta),
+    meta: mapSearchMeta(dto.meta),
   };
 }
 

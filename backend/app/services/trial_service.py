@@ -1,5 +1,3 @@
-from math import ceil
-
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
@@ -8,7 +6,7 @@ from app.db.models.trial import TrialModel
 from app.db.session import get_db_session
 from app.repositories.trial_repository import TrialRepository
 from app.schemas.trial import (
-    PageMeta,
+    SearchMeta,
     TrialDetailResponse,
     TrialListItemResponse,
     TrialLocationResponse,
@@ -22,22 +20,21 @@ class TrialService:
     def __init__(self, repository: TrialRepository) -> None:
         self.repository = repository
 
-    def search_trials(self, *, query: str, page: int, page_size: int) -> TrialsSearchResponse:
+    def search_trials(self, *, query: str, offset: int, limit: int) -> TrialsSearchResponse:
         normalized_query = query.strip()
-        offset = (page - 1) * page_size
-        page_items, total_items = self.repository.search(query=normalized_query, offset=offset, limit=page_size)
-        total_pages = ceil(total_items / page_size) if total_items else 0
+        page_items, total_items = self.repository.search(query=normalized_query, offset=offset, limit=limit)
+        next_offset = offset + len(page_items)
+        has_next = next_offset < total_items
 
         return TrialsSearchResponse(
             query=normalized_query,
             items=[self._to_list_item(trial) for trial in page_items],
-            meta=PageMeta(
-                page=page,
-                page_size=page_size,
+            meta=SearchMeta(
+                offset=offset,
+                limit=limit,
                 total_items=total_items,
-                total_pages=total_pages,
-                has_next=page < total_pages,
-                has_previous=page > 1 and total_pages > 0,
+                has_next=has_next,
+                next_offset=next_offset if has_next else None,
             ),
         )
 

@@ -88,7 +88,7 @@ Tests use an in-memory SQLite database with the real SQLAlchemy models and seed 
 ## API
 
 - `GET /health`
-- `GET /api/v1/trials?q=solid%20tumor&page=1&page_size=5`
+- `GET /api/v1/trials?q=solid%20tumor&offset=0&limit=10`
 - `GET /api/v1/trials/suggestions?q=cancer&limit=6`
 - `GET /api/v1/trials/{trial_id}`
 

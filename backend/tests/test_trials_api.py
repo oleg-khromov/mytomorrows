@@ -41,15 +41,16 @@ def test_health() -> None:
 
 
 def test_search_returns_paginated_lightweight_results() -> None:
-    response = client.get("/api/v1/trials", params={"q": "cancer", "page": 1, "page_size": 2})
+    response = client.get("/api/v1/trials", params={"q": "cancer", "offset": 0, "limit": 10})
 
     assert response.status_code == 200
     body = response.json()
     assert body["query"] == "cancer"
-    assert body["meta"]["page"] == 1
-    assert body["meta"]["page_size"] == 2
-    assert body["meta"]["total_items"] >= 2
-    assert len(body["items"]) == 2
+    assert body["meta"]["offset"] == 0
+    assert body["meta"]["limit"] == 10
+    assert body["meta"]["total_items"] >= 10
+    assert body["meta"]["next_offset"] == 10
+    assert len(body["items"]) == 10
     assert "summary" not in body["items"][0]
     assert {"id", "title", "condition", "phase", "status", "sponsor", "country_count", "last_updated"} <= set(
         body["items"][0].keys()
@@ -57,17 +58,17 @@ def test_search_returns_paginated_lightweight_results() -> None:
 
 
 def test_search_empty_query_is_allowed_but_still_paginated() -> None:
-    response = client.get("/api/v1/trials", params={"page": 1, "page_size": 3})
+    response = client.get("/api/v1/trials", params={"offset": 0, "limit": 10})
 
     assert response.status_code == 200
     body = response.json()
-    assert len(body["items"]) == 3
+    assert len(body["items"]) == 10
     assert body["meta"]["total_items"] == 100
     assert body["meta"]["has_next"] is True
 
 
 def test_search_rejects_non_empty_query_shorter_than_three_characters() -> None:
-    response = client.get("/api/v1/trials", params={"q": "ca", "page": 1, "page_size": 5})
+    response = client.get("/api/v1/trials", params={"q": "ca", "offset": 0, "limit": 10})
 
     assert response.status_code == 422
     body = response.json()
@@ -76,18 +77,18 @@ def test_search_rejects_non_empty_query_shorter_than_three_characters() -> None:
 
 
 def test_search_returns_empty_page_for_query_with_no_matches() -> None:
-    response = client.get("/api/v1/trials", params={"q": "bbb", "page": 1, "page_size": 5})
+    response = client.get("/api/v1/trials", params={"q": "bbb", "offset": 0, "limit": 10})
 
     assert response.status_code == 200
     body = response.json()
     assert body["query"] == "bbb"
     assert body["items"] == []
     assert body["meta"]["total_items"] == 0
-    assert body["meta"]["total_pages"] == 0
+    assert body["meta"]["next_offset"] is None
 
 
 def test_search_matches_condition_only() -> None:
-    response = client.get("/api/v1/trials", params={"q": "Amsterdam", "page": 1, "page_size": 5})
+    response = client.get("/api/v1/trials", params={"q": "Amsterdam", "offset": 0, "limit": 10})
 
     assert response.status_code == 200
     body = response.json()
@@ -96,7 +97,7 @@ def test_search_matches_condition_only() -> None:
 
 
 def test_search_rejects_invalid_pagination() -> None:
-    response = client.get("/api/v1/trials", params={"page": 0, "page_size": 100})
+    response = client.get("/api/v1/trials", params={"offset": -1, "limit": 100})
 
     assert response.status_code == 422
     body = response.json()

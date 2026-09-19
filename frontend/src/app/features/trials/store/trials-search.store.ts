@@ -1,18 +1,18 @@
 import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, concatMap, EMPTY, exhaustMap, finalize, map, range, Subject, switchMap, tap } from 'rxjs';
+import { catchError, EMPTY, exhaustMap, finalize, map, Subject, switchMap, tap } from 'rxjs';
 
 import { getErrorMessage } from '@core/http/api-error';
 import { withMinimumDuration } from '@core/rxjs/minimum-duration';
-import { PageMeta, PageNumber, PageSize, SearchQuery, TrialListItem } from '../models/trial.models';
+import { DEFAULT_RESULT_LIMIT, ResultLimit, ResultOffset, SearchMeta, SearchQuery, TrialListItem } from '../models/trial.models';
 import { TrialsApiService } from '../services/trials-api.service';
 
 const MINIMUM_LOADING_STATE_MS = 500;
 
 export interface SearchRequest {
   query: SearchQuery;
-  page: PageNumber;
-  pageSize: PageSize;
+  offset: ResultOffset;
+  limit: ResultLimit;
 }
 
 @Injectable()
@@ -23,10 +23,10 @@ export class TrialsSearchStore {
   private readonly loadMoreRequests$ = new Subject<void>();
 
   readonly query = signal<SearchQuery>('');
-  readonly page = signal<PageNumber>(1);
-  readonly pageSize = signal<PageSize>(5);
+  readonly offset = signal<ResultOffset>(0);
+  readonly limit = signal<ResultLimit>(DEFAULT_RESULT_LIMIT);
   readonly items = signal<readonly TrialListItem[]>([]);
-  readonly meta = signal<PageMeta | null>(null);
+  readonly meta = signal<SearchMeta | null>(null);
   readonly loading = signal(false);
   readonly loadingMore = signal(false);
   readonly error = signal<string | null>(null);
@@ -44,13 +44,12 @@ export class TrialsSearchStore {
         switchMap((request) => {
           this.setPendingState(request);
 
-          return range(1, request.page).pipe(
-            concatMap((page) => this.api.searchTrials({ ...request, page })),
+          return this.api.searchTrials(request).pipe(
             withMinimumDuration(MINIMUM_LOADING_STATE_MS),
             tap((response) => {
-              this.items.update((items) => [...items, ...response.items]);
+              this.items.set(response.items);
               this.meta.set(response.meta);
-              this.page.set(response.meta.page);
+              this.offset.set(response.meta.offset);
             }),
             catchError((error: unknown) => {
               this.items.set([]);
@@ -69,9 +68,9 @@ export class TrialsSearchStore {
     this.loadMoreRequests$
       .pipe(
         exhaustMap(() => {
-          const meta = this.meta();
+          const nextOffset = this.meta()?.nextOffset;
 
-          if (!meta?.hasNext || this.loading() || this.loadingMore()) {
+          if (nextOffset === null || nextOffset === undefined || this.loading() || this.loadingMore()) {
             return EMPTY;
           }
 
@@ -80,13 +79,13 @@ export class TrialsSearchStore {
 
           return this.api.searchTrials({
             query: this.query(),
-            page: meta.page + 1,
-            pageSize: this.pageSize(),
+            offset: nextOffset,
+            limit: this.limit(),
           }).pipe(
             tap((response) => {
               this.items.update((items) => [...items, ...response.items]);
               this.meta.set(response.meta);
-              this.page.set(response.meta.page);
+              this.offset.set(response.meta.offset);
             }),
             catchError((error: unknown) => {
               this.error.set(getErrorMessage(error));
@@ -102,7 +101,13 @@ export class TrialsSearchStore {
   }
 
   load(request: SearchRequest): void {
-    this.searchRequests$.next(request);
+    const normalizedRequest = normalizeSearchRequest(request);
+
+    if (this.canUseCurrentState(normalizedRequest)) {
+      return;
+    }
+
+    this.searchRequests$.next(normalizedRequest);
   }
 
   loadMore(): void {
@@ -111,20 +116,34 @@ export class TrialsSearchStore {
 
   private setPendingState(request: SearchRequest): void {
     this.query.set(request.query);
-    this.page.set(request.page);
-    this.pageSize.set(request.pageSize);
+    this.offset.set(request.offset);
+    this.limit.set(request.limit);
     this.items.set([]);
     this.meta.set(null);
     this.loading.set(true);
     this.loadingMore.set(false);
     this.error.set(null);
   }
+
+  private canUseCurrentState(request: SearchRequest): boolean {
+    return (
+      request.offset === 0 &&
+      this.meta() !== null &&
+      !this.loading() &&
+      !this.loadingMore() &&
+      isSameSearchRequest(request, this.query(), this.limit())
+    );
+  }
 }
 
 function normalizeSearchRequest(request: SearchRequest): SearchRequest {
   return {
     query: request.query.trim(),
-    page: request.page,
-    pageSize: request.pageSize,
+    offset: request.offset,
+    limit: request.limit,
   };
+}
+
+function isSameSearchRequest(request: SearchRequest, query: SearchQuery, limit: ResultLimit): boolean {
+  return request.query === query && request.limit === limit;
 }

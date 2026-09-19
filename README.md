@@ -18,7 +18,7 @@ Open:
 
 - Frontend: `http://localhost:4200`
 - Backend health check: `http://localhost:8000/health`
-- Backend API: `http://localhost:8000/api/v1/trials?q=cancer&page=1&page_size=5`
+- Backend API: `http://localhost:8000/api/v1/trials?q=cancer&offset=0&limit=10`
 - PostgreSQL: `localhost:5433`, database `mytomorrows`
 
 Docker uses:

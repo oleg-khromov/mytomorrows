@@ -11,8 +11,8 @@ class TrialsSearchQueryParams(BaseModel):
         max_length=MAX_SEARCH_QUERY_LENGTH,
         description="Search by trial condition.",
     )
-    page: int = Field(default=1, ge=1)
-    page_size: int = Field(default=5, ge=1, le=20)
+    offset: int = Field(default=0, ge=0)
+    limit: int = Field(default=10, ge=1, le=50)
 
     @field_validator("q")
     @classmethod
@@ -51,13 +51,12 @@ class TrialDetailResponse(TrialListItemResponse):
     source_url: str
 
 
-class PageMeta(BaseModel):
-    page: int = Field(ge=1)
-    page_size: int = Field(ge=1)
+class SearchMeta(BaseModel):
+    offset: int = Field(ge=0)
+    limit: int = Field(ge=1)
     total_items: int = Field(ge=0)
-    total_pages: int = Field(ge=0)
     has_next: bool
-    has_previous: bool
+    next_offset: int | None = Field(default=None, ge=0)
 
 
 class TrialsSearchResponse(BaseModel):
@@ -65,7 +64,7 @@ class TrialsSearchResponse(BaseModel):
 
     query: str
     items: list[TrialListItemResponse]
-    meta: PageMeta
+    meta: SearchMeta
 
 
 class TrialSuggestionResponse(BaseModel):
