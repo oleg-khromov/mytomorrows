@@ -5,12 +5,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/api/index.py"
+      "destination": "/index.py"
     }
-  ],
-  "functions": {
-    "api/index.py": {
-      "excludeFiles": "{tests/**,.pytest_cache/**,**/__pycache__/**}"
-    }
-  }
+  ]
 }

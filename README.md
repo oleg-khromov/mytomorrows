@@ -85,7 +85,6 @@ npm test
 │   │   ├── repositories    # database query layer
 │   │   ├── schemas         # Pydantic request/response schemas
 │   │   └── services        # business logic and response mapping
-│   ├── api                 # Vercel FastAPI entrypoint
 │   ├── migrations          # Alembic migrations
 │   ├── scripts             # deployment/build helpers
 │   ├── tests               # backend tests

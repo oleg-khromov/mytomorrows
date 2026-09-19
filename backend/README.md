@@ -72,7 +72,7 @@ The backend also accepts `POSTGRES_URL` or `POSTGRES_PRISMA_URL`. Plain `postgre
 
 Vercel files:
 
-- `api/index.py` exports the FastAPI `app` from `app.main`.
+- `index.py` exports the FastAPI `app` from `app.main`.
 - `vercel.json` routes requests to the FastAPI function.
 - `requirements.txt` declares Python dependencies for Vercel's Python runtime.
 - `scripts/vercel_build.py` runs `alembic upgrade head` and `python -m app.db.seed` when a hosted Postgres URL is configured.
